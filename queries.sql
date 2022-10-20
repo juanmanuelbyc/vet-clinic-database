@@ -75,6 +75,42 @@ WHERE animals_count = (SELECT max(animals_count) FROM (SELECT full_name, COUNT(a
 INNER JOIN owners ON owner_id = owners.id
 GROUP BY owners.full_name) AS animals_per_owner);
 
+SELECT animal_name FROM visits WHERE visit_date = (SELECT max(visit_date)
+FROM (SELECT visit_date FROM visits WHERE vet_name = 'William Tatcher') AS visits_dates_by_Tatcher);
+
+SELECT COUNT(animal_name) FROM (SELECT DISTINCT animal_name FROM visits
+WHERE vet_name = 'Stephanie Mendez') AS visits_by_Mendez;
+
+SELECT name, species_type FROM vets
+FULL JOIN specialities ON name = vet_name;
+
+SELECT DISTINCT animal_name FROM visits
+WHERE vet_name = 'Stephanie Mendez' AND visit_date BETWEEN '2020/04/01' AND '2020/08/30';
+
+SELECT animal_name, COUNT(visit_date) as number_of_visits from visits
+GROUP BY animal_name ORDER BY number_of_visits DESC LIMIT 1;
+
+SELECT animal_name FROM visits WHERE visit_date = (SELECT min(visit_date)
+FROM (SELECT visit_date FROM visits WHERE vet_name = 'Maisy Smith') AS visits_dates_by_Smith);
+
+SELECT animal_name, vet_name, visit_date FROM visits
+WHERE visit_date = (SELECT max(visit_date) FROM visits);
+
+SELECT COUNT(*) from (SELECT * FROM visits
+EXCEPT
+SELECT animal_name, visits.vet_name, visit_date FROM visits
+JOIN animals ON visits.animal_name = animals.name
+JOIN species ON species_id = species.id
+FULL JOIN specialities ON visits.vet_name = specialities.vet_name
+WHERE species.name = species_type) as unmatching_speciality_visit;
+
+SELECT speciality, COUNT(visit_date) from (SELECT species.name as speciality, visit_date FROM visits
+JOIN animals ON visits.animal_name = animals.name
+JOIN species ON species_id = species.id
+WHERE vet_name = 'Maisy Smith') as species_attended_by_Smith
+GROUP BY speciality ORDER BY COUNT DESC LIMIT 1;
+
+
 
 
 
